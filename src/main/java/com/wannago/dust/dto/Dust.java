@@ -10,10 +10,9 @@ public class Dust {
    private double yLocationInfo; //경도
    private double dust;    //미세먼지 수치
    private Long id;
-
+   private double distance;
    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "Asia/Seoul")
    private Date measureTime;
-   private List<GpsValue> gpsValueList;
 
     public double getxLocationInfo() {
         return xLocationInfo;
@@ -55,6 +54,14 @@ public class Dust {
         this.measureTime = measureTime;
     }
 
+    public double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
+    }
+
     @Override
     public String toString() {
         return "Dust{" +
@@ -62,6 +69,7 @@ public class Dust {
                 ", yLocationInfo=" + yLocationInfo +
                 ", dust=" + dust +
                 ", id=" + id +
+                ", distance=" + distance +
                 ", measureTime=" + measureTime +
                 '}';
     }
