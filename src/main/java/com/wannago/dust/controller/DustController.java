@@ -29,7 +29,6 @@ public class DustController {
     @PostMapping(path = "/add")
     public Dust addNewDust(@RequestBody Dust dust,
                            HttpServletRequest request){
-        System.out.println(dust);
         Dust newDust = dustService.addDust(dust);
         return newDust;
     }

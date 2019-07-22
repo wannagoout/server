@@ -35,7 +35,6 @@ public class DustService {
         newDust.setMeasureTime(new Date());
         Long id = dustDao.insert(newDust);
         newDust.setId(id);
-        System.out.println(newDust);
         return newDust;
     }
 }
