@@ -5,6 +5,7 @@ import com.wannago.dust.dto.GpsList;
 import com.wannago.dust.dto.GpsValue;
 import com.wannago.dust.service.DustService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,4 +33,10 @@ public class DustController {
         Dust newDust = dustService.addDust(dust);
         return newDust;
     }
+
+    @Scheduled(cron = "0 25 * * * ?")
+    public void checkForBatch(){
+        dustService.getDustApi();
+    }
+
 }

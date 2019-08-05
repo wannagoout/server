@@ -5,6 +5,8 @@ import com.wannago.dust.dto.GpsValue;
 import com.wannago.measureStation.dao.MeasureStationDao;
 import com.wannago.measureStation.dto.MeasureStation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.xmlpull.v1.XmlPullParser;
@@ -18,9 +20,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@PropertySource("classpath:xmlparsing.properties")
 public class MeasureStationService {
     @Autowired
     MeasureStationDao measureStationDao;
+
+    @Value("${openapi.measurement.address}")
+    String endpoint;
+
+    @Value("${openApi.serviceKey}")
+    String serviceKey;
 
     @Transactional
     public MeasureStation getMeasureStationLocation(String name){
@@ -34,13 +43,11 @@ public class MeasureStationService {
     public List<MeasureStation> getMeasureStationApi(){
         List<MeasureStation> stationList = null;
         try {
-            String addr = "http://openapi.airkorea.or.kr/openapi/services/rest/MsrstnInfoInqireSvc/getMsrstnList?ServiceKey=";
-            String serviceKey = "QQxRvaJKsukgQAB45gm82oPr1immQe3oMaLcNS5EJ8OQkxTJJ4lmA%2FkLnYlcJC8%2BvI42HKa4vrRFGzo%2BjcJpcw%3D%3D";
             String param = "";
             param += "&" + "numOfRows=500";
             param += "&" + "pageNo=1";
 
-            addr = addr + serviceKey + param;
+            String addr = endpoint + serviceKey + param;
 
             System.out.println(addr);
 

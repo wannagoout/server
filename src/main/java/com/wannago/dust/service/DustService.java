@@ -6,6 +6,8 @@ import com.wannago.dust.dto.GpsValue;
 import com.wannago.measureStation.dao.MeasureStationDao;
 import com.wannago.measureStation.dto.MeasureStation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.xmlpull.v1.XmlPullParser;
@@ -19,12 +21,19 @@ import java.util.Date;
 import java.util.List;
 
 @Service
+@PropertySource("classpath:xmlparsing.properties")
 public class DustService {
     @Autowired
     DustDao dustDao;
 
     @Autowired
     MeasureStationDao measureStationDao;
+
+    @Value("${openapi.dust.address}")
+    String endpoint;
+
+    @Value("${openApi.serviceKey}")
+    String serviceKey;
 
     @Transactional
     public List<Dust> getDusts(List<GpsValue> gpsValuesList){
@@ -50,15 +59,13 @@ public class DustService {
         String sidoNames[] = {"서울", "부산", "대구", "인천", "광주", "대전", "울산", "경기", "강원", "충북", "충남", "전북", "전남", "경북", "경남", "제주", "세종"};
         try {
             for(String sido : sidoNames) {
-                String addr = "http://openapi.airkorea.or.kr/openapi/services/rest/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty?ServiceKey=";
-                String serviceKey = "QQxRvaJKsukgQAB45gm82oPr1immQe3oMaLcNS5EJ8OQkxTJJ4lmA%2FkLnYlcJC8%2BvI42HKa4vrRFGzo%2BjcJpcw%3D%3D";
                 String param = "";
                 param += "&" + "numOfRows=100";
                 param += "&" + "pageNo=1";
                 param += "&" + "sidoName=" + sido;
                 param += "&" + "ver=1.3";
 
-                addr = addr + serviceKey + param;
+                String addr = endpoint + serviceKey + param;
 
                 System.out.println(addr);
 
@@ -84,8 +91,8 @@ public class DustService {
                             String tag = parser.getName();
                             if (tag.equals("item")) {
                                 if(dust != null) {
-                                    dustDao.insert(dust);
-                                    System.out.println(dust);
+                                    dustList.add(dust);
+                                    //dustDao.insert(dust);
                                     dust = null;
                                 }
                                 dust = new Dust();
@@ -98,7 +105,6 @@ public class DustService {
                                     String name = parser.nextText();
                                     System.out.println(name);
                                     MeasureStation m = measureStationDao.getMeasureStationLocation(name);
-                                    //System.out.println(m);
                                     if(m != null) {
                                         dust.setxLocationInfo(m.getX_location_info());
                                         dust.setyLocationInfo(m.getY_location_info());
