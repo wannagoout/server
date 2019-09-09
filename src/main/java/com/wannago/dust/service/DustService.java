@@ -35,7 +35,7 @@ public class DustService {
     @Value("${openApi.serviceKey}")
     String serviceKey;
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Dust> getDusts(List<GpsValue> gpsValuesList){
         List<Dust> list = new ArrayList<Dust>();
         for(GpsValue gps : gpsValuesList){
@@ -45,17 +45,28 @@ public class DustService {
         return list;
     }
 
-    @Transactional(readOnly = false)
-    public Dust addDust(Dust newDust){
+    @Transactional
+    public String addDust(Dust newDust){
         newDust.setMeasureTime(new Date());
+        Long mId = measureStationDao.getMeasureStationLocationForGps(newDust.getxLocationInfo(), newDust.getyLocationInfo());
+        if(mId == -1){
+            MeasureStation newMeasureStation = new MeasureStation();
+            newMeasureStation.setX_location_info(newDust.getxLocationInfo());
+            newMeasureStation.setY_location_info(newDust.getyLocationInfo());
+            newMeasureStation.setName("미세먼지 측정기기");
+            mId = measureStationDao.insert(newMeasureStation);
+        }
+        newDust.setMeasurementId(mId);
         Long id = dustDao.insert(newDust);
-        newDust.setId(id);
-        return newDust;
+        String result = "fail";
+        if(id > 0) {
+            result = "success";
+        }
+        return result;
     }
 
     @Transactional
-    public List<Dust> getDustApi(){
-        List<Dust> dustList = new ArrayList<>();
+    public void getDustApi(){
         String sidoNames[] = {"서울", "부산", "대구", "인천", "광주", "대전", "울산", "경기", "강원", "충북", "충남", "전북", "전남", "경북", "경남", "제주", "세종"};
         try {
             for(String sido : sidoNames) {
@@ -66,8 +77,6 @@ public class DustService {
                 param += "&" + "ver=1.3";
 
                 String addr = endpoint + serviceKey + param;
-
-                System.out.println(addr);
 
                 URL url = new URL(addr);
 
@@ -91,8 +100,8 @@ public class DustService {
                             String tag = parser.getName();
                             if (tag.equals("item")) {
                                 if(dust != null) {
-                                    dustList.add(dust);
-                                    //dustDao.insert(dust);
+                                    //dustList.add(dust);
+                                    dustDao.insert(dust);
                                     dust = null;
                                 }
                                 dust = new Dust();
@@ -103,16 +112,15 @@ public class DustService {
                             switch (tag) {
                                 case "stationName":
                                     String name = parser.nextText();
-                                    System.out.println(name);
                                     MeasureStation m = measureStationDao.getMeasureStationLocation(name);
                                     if(m != null) {
                                         dust.setxLocationInfo(m.getX_location_info());
                                         dust.setyLocationInfo(m.getY_location_info());
+                                        dust.setMeasurementId(m.getId());
                                     }
                                     if(m == null) dust = null;
                                     break;
                                 case "dataTime":
-                                    System.out.println(tag);
                                     if(dust != null) {
                                         dust.setMeasureTime(transFormat.parse(parser.nextText()));
                                     }
@@ -139,7 +147,6 @@ public class DustService {
         }catch (Exception e){
             e.printStackTrace();
         }
-        return dustList;
     }
 
 }

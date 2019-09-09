@@ -8,10 +8,12 @@ import java.util.List;
 public class Dust {
    private double xLocationInfo; //위도
    private double yLocationInfo; //경도
+   private Long measurementId; //측정소 id
    private double dust;    //미세먼지 수치
    private Long id;
    private double distance;
-   @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "Asia/Seoul")
+
+   @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="Asia/Seoul")
    private Date measureTime;
 
     public double getxLocationInfo() {
@@ -62,11 +64,20 @@ public class Dust {
         this.distance = distance;
     }
 
+    public Long getMeasurementId() {
+        return measurementId;
+    }
+
+    public void setMeasurementId(Long measurementId) {
+        this.measurementId = measurementId;
+    }
+
     @Override
     public String toString() {
         return "Dust{" +
                 "xLocationInfo=" + xLocationInfo +
                 ", yLocationInfo=" + yLocationInfo +
+                ", measurementId=" + measurementId +
                 ", dust=" + dust +
                 ", id=" + id +
                 ", distance=" + distance +

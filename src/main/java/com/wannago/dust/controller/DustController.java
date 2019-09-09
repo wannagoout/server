@@ -28,15 +28,15 @@ public class DustController {
     }
 
     @PostMapping(path = "/add")
-    public Dust addNewDust(@RequestBody Dust dust,
+    public String addNewDust(@RequestBody Dust dust,
                            HttpServletRequest request){
-        Dust newDust = dustService.addDust(dust);
-        return newDust;
+        return dustService.addDust(dust);
+
     }
 
-    @Scheduled(cron = "0 25 * * * ?")
-    public void checkForBatch(){
-        dustService.getDustApi();
-    }
+//    @Scheduled(cron = "0 10 * * * ?")
+//    public void checkForBatch(){
+//        dustService.getDustApi();
+//    }
 
 }

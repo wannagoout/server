@@ -1,6 +1,6 @@
 # IntelliJ
 out/
-.iml
+*.iml
 
 ### Java ###
 # Compiled class file
@@ -8,7 +8,11 @@ out/
 target/
 .idea/
 lib/
-application.properties
 
+# setting file
+*.json
+*.properties
 
+# temp
+src/main/java/com/wannago/main/controller/PushController.java
 

@@ -4,6 +4,7 @@ import com.wannago.dust.dto.Dust;
 import com.wannago.dust.dto.GpsValue;
 import com.wannago.measureStation.dao.MeasureStationDao;
 import com.wannago.measureStation.dto.MeasureStation;
+import com.wannago.measureStation.dto.response.MeasureMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -12,10 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import java.awt.*;
 import java.io.InputStream;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,11 +31,8 @@ public class MeasureStationService {
     String serviceKey;
 
     @Transactional
-    public MeasureStation getMeasureStationLocation(String name){
-        System.out.println(name);
-        MeasureStation measureStation = measureStationDao.getMeasureStationLocation(name);
-        System.out.println(measureStation);
-        return measureStation;
+    public List<MeasureMap> getAllMeasureStationLocation(){
+        return measureStationDao.getAllMeasurStationLocations();
     }
 
     @Transactional(readOnly = false)
