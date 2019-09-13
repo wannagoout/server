@@ -1,6 +1,7 @@
 package com.wannago.user.dao;
 
 import com.wannago.user.dto.User;
+import com.wannago.user.dto.UserToken;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -20,6 +21,7 @@ public class UserDao {
     private NamedParameterJdbcTemplate jdbc;
     private SimpleJdbcInsert insertAction;
     private RowMapper<User> rowMapper = BeanPropertyRowMapper.newInstance(User.class);
+    private RowMapper<UserToken> userTokenRowMapper = BeanPropertyRowMapper.newInstance(UserToken.class);
 
     public UserDao(DataSource dataSource){
         this.jdbc = new NamedParameterJdbcTemplate(dataSource);
@@ -36,5 +38,9 @@ public class UserDao {
     public Long insertUser(User newUser){
         SqlParameterSource params = new BeanPropertySqlParameterSource(newUser);
         return insertAction.executeAndReturnKey(params).longValue();
+    }
+
+    public List<UserToken> selectUserToken(){
+        return jdbc.query(CHECK_DUST, Collections.EMPTY_MAP, userTokenRowMapper);
     }
 }

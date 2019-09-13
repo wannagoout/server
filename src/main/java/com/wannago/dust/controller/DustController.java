@@ -34,9 +34,13 @@ public class DustController {
 
     }
 
-//    @Scheduled(cron = "0 10 * * * ?")
-//    public void checkForBatch(){
+    @Scheduled(cron = "0 20,40 * * * ?")
+    public void checkForBatch(){
+        dustService.getDustApi();
+    }
+
+//    @GetMapping(path = "/test")
+//    public void testGetApi(){
 //        dustService.getDustApi();
 //    }
-
 }

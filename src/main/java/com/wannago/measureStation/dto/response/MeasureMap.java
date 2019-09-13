@@ -4,7 +4,7 @@ public class MeasureMap {
     private String name;
     private double x_location_info;
     private double y_location_info;
-    private double dust;
+    private Double dust;
 
     public String getName() {
         return name;
@@ -30,11 +30,11 @@ public class MeasureMap {
         this.y_location_info = y_location_info;
     }
 
-    public double getDust() {
+    public Double getDust() {
         return dust;
     }
 
-    public void setDust(double dust) {
+    public void setDust(Double dust) {
         this.dust = dust;
     }
 }

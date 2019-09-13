@@ -13,6 +13,4 @@ lib/
 *.json
 *.properties
 
-# temp
-src/main/java/com/wannago/main/controller/PushController.java
 

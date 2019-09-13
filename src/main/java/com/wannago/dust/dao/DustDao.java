@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,7 +31,7 @@ public class DustDao {
     }
 
     public Dust selectRecent(Double x, Double y){
-        Map<String, Double> params = new HashMap<String, Double>();
+        Map<String, Double> params = new HashMap<>();
         params.put("x", x);
         params.put("y", y);
         try {
@@ -45,4 +46,12 @@ public class DustDao {
         return insertAction.executeAndReturnKey(params).longValue();
     }
 
+    public int checkMeasureStation(String dustName){
+        Map<String, String> params = Collections.singletonMap("name", dustName);
+        try {
+            return jdbc.queryForObject(CHECK_MEASUREMENT, params, int.class);
+        }catch (EmptyResultDataAccessException e){
+            return 0;
+        }
+    }
 }

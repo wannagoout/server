@@ -16,7 +16,9 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import java.io.InputStream;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -68,6 +70,7 @@ public class DustService {
     @Transactional
     public void getDustApi(){
         String sidoNames[] = {"서울", "부산", "대구", "인천", "광주", "대전", "울산", "경기", "강원", "충북", "충남", "전북", "전남", "경북", "경남", "제주", "세종"};
+        List<Dust> dustList = new ArrayList<>();
         try {
             for(String sido : sidoNames) {
                 String param = "";
@@ -89,6 +92,7 @@ public class DustService {
                 int eventType = parser.getEventType();
                 SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                 Dust dust = null;
+
                 while (eventType != XmlPullParser.END_DOCUMENT) {
                     switch (eventType) {
                         case XmlPullParser.END_DOCUMENT: // 문서의 끝
@@ -100,8 +104,8 @@ public class DustService {
                             String tag = parser.getName();
                             if (tag.equals("item")) {
                                 if(dust != null) {
-                                    //dustList.add(dust);
-                                    dustDao.insert(dust);
+                                    dustList.add(dust);
+                                    //dustDao.insert(dust);
                                     dust = null;
                                 }
                                 dust = new Dust();
@@ -112,17 +116,33 @@ public class DustService {
                             switch (tag) {
                                 case "stationName":
                                     String name = parser.nextText();
+                                    /* 현재 시간대에 측정되지않은 것만 데이터 추가하기 */
+//                                    if(dustDao.checkMeasureStation(name) != 0){
+//                                        break;
+//                                    }
                                     MeasureStation m = measureStationDao.getMeasureStationLocation(name);
                                     if(m != null) {
                                         dust.setxLocationInfo(m.getX_location_info());
                                         dust.setyLocationInfo(m.getY_location_info());
                                         dust.setMeasurementId(m.getId());
                                     }
-                                    if(m == null) dust = null;
+                                    else{
+                                        dust = null;
+                                    }
                                     break;
                                 case "dataTime":
                                     if(dust != null) {
-                                        dust.setMeasureTime(transFormat.parse(parser.nextText()));
+                                        Date measureTime = transFormat.parse(parser.nextText());
+                                        dust.setMeasureTime(measureTime);
+                                        /* 시간 확인 후 현재 시간대에 측정된 것만 넣어주기 */
+//                                        Calendar calendar = Calendar.getInstance();
+//                                        calendar.setTime(measureTime);
+//                                        if(calendar.get(Calendar.HOUR_OF_DAY) == LocalDateTime.now().getHour()) {
+//                                            dust.setMeasureTime(measureTime);
+//                                        }
+//                                        else{
+//                                            dust = null;
+//                                        }
                                     }
                                     break;
                                 case "pm10Value":
@@ -147,6 +167,10 @@ public class DustService {
         }catch (Exception e){
             e.printStackTrace();
         }
+        for(Dust d : dustList){
+            System.out.println(d);
+        }
+        System.out.println(dustList.size());
     }
 
 }
